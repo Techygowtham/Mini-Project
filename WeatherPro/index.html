@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1">
+		
+		<title>Weather Forecasting </title>
+        <link rel="icon" href="images/logo.ico">
+		<!-- Loading third party fonts -->
+		<link href="http://fonts.googleapis.com/css?family=Roboto:300,400,700|" rel="stylesheet" type="text/css">
+		<link href="fonts/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+		<!-- Loading main css file -->
+		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="animate.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+		<!--[if lt IE 9]>
+		<script src="js/ie-support/html5.js"></script>
+		<script src="js/ie-support/respond.js"></script>
+		<![endif]-->
+          ​<style>
+			.day_report  {
+				font-family: arial, sans-serif;
+				border-collapse: collapse;
+				width: 100%;
+				margin-top:30px;
+			}
+
+			.day_report td, .day_report th {
+				border: 1px solid #14599d;
+				text-align: center;
+				padding: 8px;
+				color:white;
+			}
+			.day_report th {  background-color: rgba(20, 89, 157, 0.3); }
+            div.clickClass:hover
+			{
+         			cursor: pointer; cursor: hand; border: 1px solid #14599d;; 
+					
+			}
+			.highlight{
+			 border:1px solid #14599d;;
+			}
+			.pac-container:after {
+				/* Disclaimer: not needed to show 'powered by Google' if also a Google Map is shown */
+
+				background-image: none !important;
+				height: 0px;
+			}
+
+       </style>
+	</head>
+
+
+	<body>
+		
+		<div class="site-content">
+			<div class="hero" >
+				<div class="container animated lightSpeedIn">
+				    <a href="index.html" style="text-align: center;display: block;margin: auto;" class="branding animated bounceIn">
+						<img src="images/logo.png" alt="" class="logo">
+						<div class="logo-type">
+							<h1 class="site-title">Weather Pro </h1>
+						</div>
+					</a>
+					<form style="margin-bottom:0px !important;" action="#" class="find-location">
+					    <input type="text" id="get_city_name"  placeholder="Find your location...">
+						<input type="hidden" id="city_name"  value="" >
+						<input type="submit" id="find_weather" value="Find">
+					</form>
+					<div class="headline" style="text-align: center;margin-top: 50px;"></div>
+				</div>
+			</div>
+			<div class="forecast-table" style="margin-top:125px;" >
+				<div class="container">
+					<div class="forecast-container" id="data_list" >
+					</div>
+				</div>
+			</div>
+			<div class="forecast-table" style="margin-top:125px;" >
+				<div class="container">
+					<div class="forecast-container"  id="day_details" >
+
+					</div>
+				</div>
+			</div>
+			</main> <!-- .main-content -->
+	   <footer class="site-footer" style="right: 0;bottom: 0;left: 0; padding: 1rem;text-align: center;color: #14599d">
+				<div class="container animated flash" style="-webkit-animation-iteration-count:infinite">
+					<p class="colophon" ><b> Developed by M.Gowtham, R.Gireesh and S.Sreenu. &copy All rights reserved</b></p>
+					<center><ul>
+						<li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+					</ul></center>
+
+				</div>
+	   </footer> <!-- .site-footer -->
+		</div>
+
+		<script src="js/jquery-1.11.1.min.js"></script>
+		<script src="js/plugins.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/bootbox.min.js"></script>
+	  <script>
+      var placeSearch, autocomplete;
+      var componentForm = {
+        street_number: 'short_name',
+        route: 'long_name',
+        locality: 'long_name',
+        administrative_area_level_1: 'short_name',
+        country: 'long_name',
+        postal_code: 'short_name'
+      };
+
+      function initAutocomplete() {
+        // Create the autocomplete object, restricting the search to geographical
+        // location types.
+        autocomplete = new google.maps.places.Autocomplete(
+            /** @type {!HTMLInputElement} */(document.getElementById('get_city_name')),
+            {types: ['geocode']});
+
+        // When the user selects an address from the dropdown, populate the address
+        // fields in the form.
+        autocomplete.addListener('place_changed', fillInAddress);
+      }
+
+      function fillInAddress() {
+        // Get the place details from the autocomplete object.
+        var place = autocomplete.getPlace();
+        console.log(place);
+		if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+          }
+		document.getElementById('city_name').value = place.address_components[0].long_name;
+      }
+
+      // Bias the autocomplete object to the user's geographical location,
+      // as supplied by the browser's 'navigator.geolocation' object.
+      function geolocate() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var geolocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            var circle = new google.maps.Circle({
+              center: geolocation,
+              radius: position.coords.accuracy
+            });
+            autocomplete.setBounds(circle.getBounds());
+          });
+        }
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCeRNv8ngphB_iY_j6cEvzH5LBbW2I1lUI&libraries=places&callback=initAutocomplete" async defer></script>
+	<script type="text/javascript" >
+	   // get_weather_forecasting('hyderabad');
+
+		$('body').on('click', 'div.clickClass', function() {
+		 var dayindex= parseInt($(this).data("dayindex"));
+		 var daycity=$(this).data("daycity");
+		 $("div.clickClass").removeClass("highlight");
+		 $(this).addClass("highlight");
+		 get_day_forecasting(dayindex,daycity)
+		});
+		  
+		  
+		$("form").submit(function(e){
+         e.preventDefault();
+		 if($("#city_name").val()=='' || $("#get_city_name").val()=='' )
+		 {
+		    $("#city_name").val('');
+			$("#get_city_name").val('');
+			$(".headline").html("");
+			$("#day_details").html("");
+			$("#data_list").html("");
+			$("#get_city_name").css({"border":"2px solid red"});
+			$("#get_city_name").focus();
+		 }
+		 else
+		 {
+		   var city=$("#city_name").val();
+		    $(".headline").html("");
+			$("#day_details").html("");
+			$("#data_list").html("");
+		   get_weather_forecasting(city);
+         }
+        });
+		
+		
+		function get_weather_forecasting(city)
+		{
+		
+		 $.getJSON('http://api.apixu.com/v1/forecast.json?key=4d08f8a38f894ddc9ec141916171703&q='+city+'&days=10', function(data){
+		 console.log(data);
+		 $("#data_list").html("");
+		 var forecast_content="";
+		 for(i=0;i<7;i++)
+		 {
+			if(i==0)
+			{
+				var date    = new Date(data.forecast.forecastday[i].date);
+				var dayname=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()];
+				var monthName= ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][date.getMonth()];
+				var day     = date.getDate()  < 10 ? '0' + date.getDate()  : date.getDate();
+				forecast_content=forecast_content+"<div class='today forecast clickClass'  data-dayindex='"+i+"' data-daycity='"+city+"' >";
+				forecast_content=forecast_content+"<div class='forecast-header'>";
+				forecast_content=forecast_content+"<div class='day'>"+dayname+"</div>";
+				forecast_content=forecast_content+"<div class='date'>"+day+" "+monthName+"</br></div>";
+				forecast_content=forecast_content+"</div>";
+				forecast_content=forecast_content+"<div class='forecast-content'>";
+				forecast_content=forecast_content+"<div class='location'>Current temp of <span style='text-transform:capitalize !important;' >"+city+"</span></div>";
+				forecast_content=forecast_content+"<div class='degree'>";
+				forecast_content=forecast_content+"<div class='num'>"+data.current.temp_c+"<sup>o</sup>C</div>";
+				forecast_content=forecast_content+"<div class='forecast-icon'>";
+				forecast_content=forecast_content+"<img src='"+data.current.condition.icon+"' alt='' width=65>";
+				forecast_content=forecast_content+"</div>";	
+				forecast_content=forecast_content+"</div>";
+				forecast_content=forecast_content+"<span><img src='images/icon-umberella.png' alt=''>"+data.current.humidity+"%</span>";
+				forecast_content=forecast_content+"<span><img src='images/icon-wind.png' alt=''>"+data.current.wind_kph+"km/h</span>";
+				forecast_content=forecast_content+"<span><img src='images/icon-compass.png' alt=''>"+data.current.wind_dir+"</span>";
+				forecast_content=forecast_content+"</div>";
+				forecast_content=forecast_content+"</div>";
+			}
+			else
+			{
+				var date    = new Date(data.forecast.forecastday[i].date);
+				   var dayname=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()];
+				var monthName= ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][date.getMonth()];
+				var day     = date.getDate()  < 10 ? '0' + date.getDate()  : date.getDate();
+				forecast_content=forecast_content+"<div class='forecast clickClass' data-dayindex='"+i+"' data-daycity='"+city+"'  >";
+				forecast_content=forecast_content+"<div class='forecast-header'>";
+				forecast_content=forecast_content+"<div class='day'>"+dayname+"<br>"+day+" "+monthName+"</div>";
+				forecast_content=forecast_content+"</div> ";
+				forecast_content=forecast_content+"<div class='forecast-content'>";
+				forecast_content=forecast_content+"<div class='forecast-icon'>";
+				forecast_content=forecast_content+"<img src='"+data.forecast.forecastday[i].day.condition.icon+"' alt='' width=48>";
+				forecast_content=forecast_content+"</div>";
+				forecast_content=forecast_content+"<div class='degree'>"+data.forecast.forecastday[i].day.maxtemp_c+"<sup>o</sup>C</div>";
+				forecast_content=forecast_content+"<small>"+data.forecast.forecastday[i].day.mintemp_c+"<sup>o</sup></small>";
+				forecast_content=forecast_content+"</div>";
+				forecast_content=forecast_content+"</div>";
+			  }
+			 }
+			 $(".headline").html("<h1 style='border-bottom: 1px solid #14599d;padding-bottom: 5px;color: rgb(20, 89, 157);'>7 days weather forecasting of <span id='city_header' >"+city+"</span></h1>");   
+			 $("#data_list").html(forecast_content);
+			 }).fail(function( jqxhr, textStatus, error ) {
+			         var err = textStatus + ", " + error;
+                     console.log( "Request Failed: " + err );
+					if (jqxhr.status == 404 || jqxhr.status == 400 ) {
+							 $(".headline").html("<h3 style='color:red;'>Weather report not found.Please enter proper city or town name.Dont enter area/street names</h3>");   
+					}
+				});
+		 
+	    }
+		
+		
+	    function get_day_forecasting(dayindex,daycity)
+		{
+		    $.getJSON('http://api.apixu.com/v1/forecast.json?key=4d08f8a38f894ddc9ec141916171703&q='+daycity+'&days=10', function(data){
+             console.log(data);
+			 $("#day_details").html("");
+			   var  day_content="";
+			    var date    = new Date(data.forecast.forecastday[dayindex].date);
+			    var dayname=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][date.getDay()];
+				var monthName= ["Jan", "Feb", "Mar", "Apr", "May", "Jun","Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][date.getMonth()];
+				var day     = date.getDate()  < 10 ? '0' + date.getDate()  : date.getDate();
+			 	day_content=day_content+"<div class='today forecast'>";
+                day_content=day_content+"<div class='forecast-header'>";
+				day_content=day_content+"<div class='day'>"+dayname+"</div>";
+				day_content=day_content+"<div class='date'>"+day+" "+monthName+"</br></div>";
+				day_content=day_content+"</div>";
+				day_content=day_content+"<div class='forecast-content'>";
+				day_content=day_content+"<table class='day_report' >";
+				day_content=day_content+"<tr>";
+                day_content=day_content+"<th colspan='2' style='text-align:center !important;background-color: #14599d;'  >Weather condions of "+day+" "+monthName+" "+ date.getFullYear()+"</th>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+"<th>Average Humidity</th>";
+                day_content=day_content+"<td>"+data.forecast.forecastday[dayindex].day.avghumidity+"%</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+"<th>Average Temperature</th>";
+                day_content=day_content+"<td>"+data.forecast.forecastday[dayindex].day.avgtemp_c+"<sup>o</sup>C</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+" <th>Condition</th>";
+                day_content=day_content+"<td>"+data.forecast.forecastday[dayindex].day.condition.text+"</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+" <th>Max.Temperature</th>";
+                day_content=day_content+"<td>"+data.forecast.forecastday[dayindex].day.maxtemp_c+"<sup>o</sup>C</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+"<th>Min.Temperature</th>";
+                day_content=day_content+"<td>"+data.forecast.forecastday[dayindex].day.mintemp_c+"<sup>o</sup>C</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"<tr>";
+                day_content=day_content+"<th>Max.Wind Speed</th>";
+                day_content=day_content+" <td>"+data.forecast.forecastday[dayindex].day.maxwind_kph+"/km per hour</td>";
+                day_content=day_content+"</tr>";
+                day_content=day_content+"</table>";
+				day_content=day_content+"<table class='day_report' >";
+				day_content=day_content+"<tr>";
+                day_content=day_content+"<th colspan='25' style='text-align:center !important;background-color: #14599d;'  >Hourly Weather condions of "+day+" "+monthName+" "+ date.getFullYear()+"</th>";
+                day_content=day_content+"</tr>";
+				day_content=day_content+"<tr>";
+				day_content=day_content+"<th></th>";
+				day_content=day_content+"<th>Condition</th>";
+				day_content=day_content+"<th>Humidity</th>";
+				day_content=day_content+"<th>Temperature</th>";
+				day_content=day_content+"<th>Wind Speed</th>";
+				day_content=day_content+"<th>Wind Directions</th>";
+				day_content=day_content+"</tr>";
+				for(j=0;j<24;j++)
+				{
+				  day_content=day_content+"<tr>";
+				  var datetime=new Date(data.forecast.forecastday[dayindex].hour[j].time);
+				  var hours = datetime.getHours(); //returns 0-23
+                  var minutes = datetime.getMinutes(); //returns 0-59
+				  day_content=day_content+"<th>"+pad(hours,2)+":"+pad(minutes,2)+"</th>";
+				  day_content=day_content+"<td style='text-align:center !important' >";
+				  day_content=day_content+"<div><img src='"+data.forecast.forecastday[i].hour[j].condition.icon+"' alt='' width=80></div>";
+				  day_content=day_content+"<div><p>"+data.forecast.forecastday[dayindex].hour[j].condition.text+"</p></div>";
+				  day_content=day_content+"</td>";
+				 day_content=day_content+"<td style='text-align:center !important' >";
+				 day_content=day_content+"<span>"+data.forecast.forecastday[dayindex].hour[j].humidity+"%</span>";
+				 day_content=day_content+"</td>";
+				 day_content=day_content+"<td style='text-align:center !important' >";
+				 day_content=day_content+"<span>"+data.forecast.forecastday[dayindex].hour[j].temp_c+"<sup>o</sup>C</span>";
+				 day_content=day_content+"</td>";
+				 day_content=day_content+"<td style='text-align:center !important' >";
+				 day_content=day_content+"<span>"+data.forecast.forecastday[dayindex].hour[j].wind_kph+"/kph</span>";
+				 day_content=day_content+"</td>";
+				 day_content=day_content+"<td style='text-align:center !important' >";
+				 day_content=day_content+"<span>"+data.forecast.forecastday[dayindex].hour[j].wind_dir+"</span>";
+				 day_content=day_content+"</td>";
+				 day_content=day_content+"</tr>";
+				}
+				day_content=day_content+"</table>";
+				day_content=day_content+"</div>";
+				day_content=day_content+"</div>";
+				$("#day_details").html(day_content);
+           });
+        }
+		  
+		function pad(str, max) 
+		{
+			  str = str.toString();
+			  return str.length < max ? pad("0" + str, max) : str;
+		}
+		</script>
+	</body>
+
+</html>
